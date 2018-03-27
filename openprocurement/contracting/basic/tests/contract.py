@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from openprocurement.api.tests.base import snitch
 
-from openprocurement.contracting.core.tests.base import (
+from openprocurement.contracting.basic.tests.base import (
     test_contract_data,
     test_contract_data_wo_items,
     BaseWebTest,

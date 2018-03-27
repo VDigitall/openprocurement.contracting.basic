@@ -3,7 +3,7 @@ import unittest
 
 from openprocurement.api.tests.base import snitch
 
-from openprocurement.contracting.core.tests.base import BaseContractContentWebTest
+from openprocurement.contracting.basic.tests.base import BaseContractContentWebTest
 from openprocurement.contracting.core.tests.document_blanks import (
     # ContractDocumentResourceTest
     not_found,

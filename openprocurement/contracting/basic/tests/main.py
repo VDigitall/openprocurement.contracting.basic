@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openprocurement.contracting.core.tests import contract, document
+from openprocurement.contracting.basic.tests import contract, document
 
 
 def suite():

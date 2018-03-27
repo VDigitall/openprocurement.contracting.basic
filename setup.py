@@ -20,18 +20,16 @@ docs_requires = requires + [
 api_requires = requires + [
     'openprocurement.api>=2.4',
     'openprocurement.tender.core',
+    'openprocurement.contracting.core',
 ]
 
 entry_points = {
-    'openprocurement.api.plugins': [
-        'contracting = openprocurement.contracting.core:includeme'
-    ],
-    'openprocurement.api.migrations': [
-        'contracts = openprocurement.contracting.core.migration:migrate_data'
+    'openprocurement.contracting.core.plugins': [
+        'contract.common = openprocurement.contracting.basic:includeme'
     ]
 }
 
-setup(name='openprocurement.contracting.core',
+setup(name='openprocurement.contracting.basic',
     version=version,
     description="",
     long_description=open("README.rst").read(),
@@ -46,7 +44,7 @@ setup(name='openprocurement.contracting.core',
     author='Quintagroup, Ltd.',
     author_email='info@quintagroup.com',
     license='Apache License 2.0',
-    url='https://github.com/bdmbdsm/openprocurement.contracting.core',
+    url='https://github.com/openprocurement/openprocurement.contracting.basic',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['openprocurement', 'openprocurement.contracting'],
     include_package_data=True,
