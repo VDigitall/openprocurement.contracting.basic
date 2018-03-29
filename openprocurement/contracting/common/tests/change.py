@@ -5,7 +5,7 @@ from openprocurement.api.tests.base import (
     snitch
 )
 
-from openprocurement.contracting.basic.tests.base import (
+from openprocurement.contracting.common.tests.base import (
     BaseWebTest,
     BaseContractContentWebTest,
     test_contract_data

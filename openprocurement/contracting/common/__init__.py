@@ -16,4 +16,4 @@ def includeme(config):
     add_design()
     config.add_request_method(extract_contract, 'contract', reify=True)
     config.add_request_method(contract_from_data)
-    config.scan("openprocurement.contracting.basic.views")
+    config.scan("openprocurement.contracting.common.views")

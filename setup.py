@@ -25,11 +25,11 @@ api_requires = requires + [
 
 entry_points = {
     'openprocurement.contracting.core.plugins': [
-        'contract.common = openprocurement.contracting.basic:includeme'
+        'contract.common = openprocurement.contracting.common:includeme'
     ]
 }
 
-setup(name='openprocurement.contracting.basic',
+setup(name='openprocurement.contracting.common',
     version=version,
     description="",
     long_description=open("README.rst").read(),
@@ -44,7 +44,7 @@ setup(name='openprocurement.contracting.basic',
     author='Quintagroup, Ltd.',
     author_email='info@quintagroup.com',
     license='Apache License 2.0',
-    url='https://github.com/openprocurement/openprocurement.contracting.basic',
+    url='https://github.com/openprocurement/openprocurement.contracting.common',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['openprocurement', 'openprocurement.contracting'],
     include_package_data=True,
