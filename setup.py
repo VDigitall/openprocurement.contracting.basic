@@ -1,5 +1,5 @@
-from setuptools import setup, find_packages
 import os
+from setuptools import setup, find_packages
 
 version = '2.4.2'
 
@@ -25,7 +25,7 @@ api_requires = requires + [
 
 entry_points = {
     'openprocurement.contracting.core.plugins': [
-        'contract.common = openprocurement.contracting.common:includeme'
+        'contract.common = openprocurement.contracting.common.includeme:includeme'
     ]
 }
 
