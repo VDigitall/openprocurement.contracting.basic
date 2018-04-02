@@ -29,6 +29,7 @@ from openprocurement.contracting.core.validation import (
     name='Contract changes',
     collection_path='/contracts/{contract_id}/changes',
     path='/contracts/{contract_id}/changes/{change_id}',
+    contractType='common',
     description="Contracts Changes"
 )
 class ContractsChangesResource(APIResource):

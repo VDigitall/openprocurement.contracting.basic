@@ -27,6 +27,7 @@ from openprocurement.contracting.core.validation import (
     name='Contract Documents',
     collection_path='/contracts/{contract_id}/documents',
     path='/contracts/{contract_id}/documents/{document_id}',
+    contractType='common',
     description="Contract related binary files (PDFs, etc.)"
 )
 class ContractsDocumentResource(APIResource):
