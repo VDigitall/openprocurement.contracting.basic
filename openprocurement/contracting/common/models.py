@@ -54,7 +54,7 @@ item_edit_role = whitelist(
     'deliveryAddress', 'deliveryLocation', 'quantity', 'id')
 
 
-class IContract(Interface):
+class ICommonContract(Interface):
     """ Contract marker interface """
 
 
@@ -157,7 +157,7 @@ class Change(Model):
             raise ValidationError(u"Contract signature date can't be in the future")
 
 
-@implementer(IContract)
+@implementer(ICommonContract)
 class Contract(SchematicsDocument, BaseContract):
     """ Contract """
 
@@ -177,6 +177,7 @@ class Contract(SchematicsDocument, BaseContract):
     documents = ListType(ModelType(Document), default=list())
     amountPaid = ModelType(Value)
     terminationDetails = StringType()
+    contractType = StringType(choices=['common', 'esco'])
 
     create_accreditation = 3  # TODO
 
