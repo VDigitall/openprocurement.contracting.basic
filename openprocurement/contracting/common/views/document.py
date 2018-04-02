@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-from openprocurement.contracting.api.utils import (
-    contractingresource,
-)
-from openprocurement.contracting.core.utils import (
-    save_contract,
-    apply_patch,
-)
 from openprocurement.api.utils import (
     upload_file,
     update_file_content_type,
@@ -19,6 +12,11 @@ from openprocurement.api.validation import (
     validate_file_upload,
     validate_patch_document_data,
 )
+from openprocurement.contracting.api.utils import (
+    contractingresource,
+    save_contract
+)
+from openprocurement.contracting.core.utils import apply_patch
 from openprocurement.contracting.core.validation import (
     validate_add_document_to_active_change,
     validate_contract_document_operation_not_in_allowed_contract_status

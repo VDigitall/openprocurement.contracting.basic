@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.utils import (
     context_unpack,
-    decrypt,
-    encrypt,
     json_view,
     APIResource,
     get_now,
@@ -10,12 +8,12 @@ from openprocurement.api.utils import (
 )
 from openprocurement.contracting.api.utils import (
     contractingresource,
+    contract_serialize,
+    save_contract
 )
 from openprocurement.contracting.core.utils import (
     apply_patch,
-    contract_serialize,
     set_ownership,
-    save_contract
 )
 from openprocurement.contracting.core.validation import (
     validate_change_data,

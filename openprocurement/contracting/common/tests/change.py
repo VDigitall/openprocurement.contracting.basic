@@ -4,13 +4,12 @@ import unittest
 from openprocurement.api.tests.base import (
     snitch
 )
-
+from openprocurement.contracting.core.tests.base import test_contract_data
 from openprocurement.contracting.common.tests.base import (
     BaseWebTest,
     BaseContractContentWebTest,
-    test_contract_data
 )
-from openprocurement.contracting.core.tests.change_blanks import (
+from openprocurement.contracting.common.tests.change_blanks import (
     # ContractNoItemsChangeTest
     no_items_contract_change,
     # ContractChangesResourceTest

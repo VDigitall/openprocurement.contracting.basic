@@ -5,13 +5,14 @@ from copy import deepcopy
 from openprocurement.api.tests.base import snitch
 
 from openprocurement.contracting.common.tests.base import (
-    test_contract_data,
-    test_contract_data_wo_items,
     BaseWebTest,
     BaseContractWebTest,
+    BaseContractContentWebTest,
+    test_contract_data,
+    test_contract_data_wo_items,
     documents
 )
-from openprocurement.contracting.core.tests.contract_blanks import (
+from openprocurement.contracting.common.tests.contract_blanks import (
     # ContractTest
     simple_add_contract,
     # ContractResourceTest
