@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.utils import (
     context_unpack,
-    decrypt,
-    encrypt,
     json_view,
     APIResource,
     get_now,
     raise_operation_error
 )
-
-from openprocurement.contracting.core.utils import (
+from openprocurement.contracting.api.utils import (
     contractingresource,
-    apply_patch,
     contract_serialize,
-    set_ownership,
     save_contract
+)
+from openprocurement.contracting.core.utils import (
+    apply_patch,
+    set_ownership,
 )
 from openprocurement.contracting.core.validation import (
     validate_change_data,
@@ -30,6 +29,7 @@ from openprocurement.contracting.core.validation import (
     name='Contract changes',
     collection_path='/contracts/{contract_id}/changes',
     path='/contracts/{contract_id}/changes/{change_id}',
+    contractType='common',
     description="Contracts Changes"
 )
 class ContractsChangesResource(APIResource):
