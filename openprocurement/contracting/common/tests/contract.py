@@ -5,8 +5,6 @@ from copy import deepcopy
 from openprocurement.api.tests.base import snitch
 
 from openprocurement.contracting.core.tests.base import (
-    test_contract_data,
-    test_contract_data_wo_items,
     documents
 )
 
@@ -14,6 +12,8 @@ from openprocurement.contracting.common.tests.base import (
     BaseWebTest,
     BaseContractWebTest,
     BaseContractContentWebTest,
+    test_common_contract_data,
+    test_common_contract_data_wo_items,
 )
 from openprocurement.contracting.common.tests.contract_blanks import (
     # ContractTest
@@ -44,14 +44,14 @@ from openprocurement.contracting.common.tests.contract_blanks import (
 
 
 class ContractTest(BaseWebTest):
-    initial_data = test_contract_data
+    initial_data = test_common_contract_data
 
     test_simple_add_contract = snitch(simple_add_contract)
 
 
 class ContractResourceTest(BaseWebTest):
     """ contract resource test """
-    initial_data = test_contract_data
+    initial_data = test_common_contract_data
 
     test_empty_listing = snitch(empty_listing)
     test_listing = snitch(listing)
@@ -65,7 +65,7 @@ class ContractResourceTest(BaseWebTest):
 
 class ContractWDocumentsWithDSResourceTest(BaseWebTest):
     docservice = True
-    initial_data = deepcopy(test_contract_data)
+    initial_data = deepcopy(test_common_contract_data)
     documents = deepcopy(documents)
     initial_data['documents'] = documents
 
@@ -81,12 +81,8 @@ class ContractResource4BrokersTest(BaseContractWebTest):
     test_patch_tender_contract = snitch(patch_tender_contract)
 
 
-test_contract_data_wo_items = deepcopy(test_contract_data)
-del test_contract_data_wo_items['items']
-
-
 class ContractWOItemsResource4BrokersTest(BaseContractWebTest):
-    initial_data = test_contract_data_wo_items
+    initial_data = test_common_contract_data_wo_items
     initial_auth = ('Basic', ('broker', ''))
 
     def test_contract_wo_items_status_change(self):
@@ -136,14 +132,14 @@ class ContractCredentialsTest(BaseContractWebTest):
     """ Contract credentials tests """
 
     initial_auth = ('Basic', ('broker', ''))
-    initial_data = test_contract_data
+    initial_data = test_common_contract_data
 
     test_get_credentials = snitch(get_credentials)
     test_generate_credentials = snitch(generate_credentials)
 
 
 class ContractWOItemsResource4BrokersTest(BaseContractWebTest):
-    initial_data = test_contract_data_wo_items
+    initial_data = test_common_contract_data_wo_items
     initial_auth = ('Basic', ('broker', ''))
 
     test_contract_wo_items_status_change = snitch(contract_wo_items_status_change)
