@@ -658,18 +658,21 @@ def patch_tender_contract(self):
                                    {"data": {"amountPaid": {"amount": 900, "currency": "USD", "valueAddedTaxIncluded": False}}})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['amountPaid']['amount'], 900)
-    self.assertEqual(response.json['data']['amountPaid']['currency'], "UAH")
-    self.assertEqual(response.json['data']['amountPaid']['valueAddedTaxIncluded'], True)
+    self.assertEqual(response.json['data']['amountPaid']['currency'], self.initial_data['value']['currency'])
+    self.assertEqual(response.json['data']['amountPaid']['valueAddedTaxIncluded'],
+                     self.initial_data['value']['valueAddedTaxIncluded'])
 
     response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
                                    {"data": {"value": {"amount": 235}}})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['value']['amount'], 235)
-    self.assertEqual(response.json['data']['value']['currency'], "UAH")
-    self.assertEqual(response.json['data']['value']['valueAddedTaxIncluded'], True)
+    self.assertEqual(response.json['data']['value']['currency'], self.initial_data['value']['currency'])
+    self.assertEqual(response.json['data']['value']['valueAddedTaxIncluded'],
+                     self.initial_data['value']['valueAddedTaxIncluded'])
     self.assertEqual(response.json['data']['amountPaid']['amount'], 900)
-    self.assertEqual(response.json['data']['amountPaid']['currency'], "UAH")
-    self.assertEqual(response.json['data']['amountPaid']['valueAddedTaxIncluded'], True)
+    self.assertEqual(response.json['data']['amountPaid']['currency'], self.initial_data['value']['currency'])
+    self.assertEqual(response.json['data']['amountPaid']['valueAddedTaxIncluded'],
+                     self.initial_data['value']['valueAddedTaxIncluded'])
 
     response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
                                    {"data": {"value": {"currency": "USD", "valueAddedTaxIncluded": False}}})
@@ -746,9 +749,11 @@ def contract_administrator_change(self):
     self.assertEqual(response.json['data']["procuringEntity"]["identifier"]["id"], "11111111")
     self.assertEqual(response.json['data']["procuringEntity"]["contactPoint"]["telephone"], "102")
     self.assertEqual(response.json['data']["suppliers"][0]["contactPoint"]["email"], "fff@gmail.com")
-    self.assertEqual(response.json['data']["suppliers"][0]["contactPoint"]["telephone"], "+380 (322) 91-69-30") # old field value left untouchable
+    self.assertEqual(response.json['data']["suppliers"][0]["contactPoint"]["telephone"],
+                     self.initial_data["suppliers"][0]["contactPoint"]["telephone"]) # old field value left untouchable
     self.assertEqual(response.json['data']["suppliers"][0]["address"]["postalCode"], "79014")
-    self.assertEqual(response.json['data']["suppliers"][0]["address"]["countryName"], u"Україна") # old field value left untouchable
+    self.assertEqual(response.json['data']["suppliers"][0]["address"]["countryName"],
+                     self.initial_data["suppliers"][0]["address"]["countryName"]) # old field value left untouchable
     # administrator has permissions to update only: mode, procuringEntity, suppliers
     response = self.app.patch_json('/contracts/{}'.format(self.contract['id']), {'data': {
         'value': {'amount': 100500},
@@ -760,7 +765,7 @@ def contract_administrator_change(self):
     self.assertEqual(response.body, 'null')
 
     response = self.app.get('/contracts/{}'.format(self.contract['id']))
-    self.assertEqual(response.json['data']['value']['amount'], 238)
+    self.assertEqual(response.json['data']['value']['amount'], self.initial_data['value']['amount'])
     self.assertEqual(response.json['data']['id'], self.initial_data['id'])
     self.assertEqual(response.json['data']['owner'], self.initial_data['owner'])
     self.assertEqual(response.json['data']['contractID'], self.initial_data['contractID'])
