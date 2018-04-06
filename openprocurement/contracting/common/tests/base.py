@@ -5,7 +5,16 @@ from copy import deepcopy
 from openprocurement.contracting.api.tests.base import (
     BaseWebTest as BaseBaseWebTest
 )
-from openprocurement.contracting.core.tests.base import test_contract_data
+from openprocurement.contracting.core.tests.base import (
+    test_contract_data,
+    test_contract_data_wo_items
+)
+
+
+test_common_contract_data = deepcopy(test_contract_data)
+test_common_contract_data['contractType'] = 'common'
+test_common_contract_data_wo_items = deepcopy(test_contract_data_wo_items)
+test_common_contract_data_wo_items['contractType'] = 'common'
 
 
 class BaseWebTest(BaseBaseWebTest):
@@ -17,7 +26,7 @@ class BaseWebTest(BaseBaseWebTest):
 
 
 class BaseContractWebTest(BaseWebTest):
-    initial_data = test_contract_data
+    initial_data = test_common_contract_data
 
     def setUp(self):
         super(BaseContractWebTest, self).setUp()

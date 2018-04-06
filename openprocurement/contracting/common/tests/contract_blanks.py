@@ -4,7 +4,7 @@ from copy import deepcopy
 from datetime import timedelta
 from openprocurement.api.utils import get_now
 from openprocurement.api.constants import ROUTE_PREFIX
-from openprocurement.contracting.core.models import Contract
+from openprocurement.contracting.common.models import Contract
 
 
 # ContractTest
@@ -441,6 +441,17 @@ def create_contract_invalid(self):
             u'body', u'name': u'invalid_field'}
     ])
 
+    data = deepcopy(self.initial_data)
+    data['contractType'] = 'not implemented contract type'
+    response = self.app.post_json(request_path, {'data': data}, status=415)
+    self.assertEqual(response.status, '415 Unsupported Media Type')
+    self.assertEqual(response.content_type, 'application/json')
+    self.assertEqual(response.json['status'], 'error')
+    self.assertEqual(response.json['errors'], [
+        {u'description': u'Not implemented', u'location':
+         u'data', u'name': u'contractType'}
+    ])
+
 def create_contract_generated(self):
     data = self.initial_data.copy()
     data.update({'id': uuid4().hex, 'doc_id': uuid4().hex, 'contractID': uuid4().hex})
@@ -451,7 +462,7 @@ def create_contract_generated(self):
     self.assertEqual(set(contract), set([
         u'id', u'dateModified', u'contractID', u'status', u'suppliers',
         u'contractNumber', u'period', u'dateSigned', u'value', u'awardID',
-        u'items', u'owner', u'tender_id', u'procuringEntity']))
+        u'items', u'owner', u'tender_id', u'procuringEntity', u'contractType']))
     self.assertEqual(data['id'], contract['id'])
     self.assertNotEqual(data['doc_id'], contract['id'])
     self.assertEqual(data['contractID'], contract['contractID'])
@@ -467,6 +478,23 @@ def create_contract(self):
     contract = response.json['data']
     self.assertEqual(contract['status'], 'active')
 
+    response = self.app.get('/contracts/{}'.format(contract['id']))
+    self.assertEqual(response.status, '200 OK')
+    self.assertEqual(response.content_type, 'application/json')
+    self.assertEqual(set(response.json['data']), set(contract))
+    self.assertEqual(response.json['data'], contract)
+
+    # simulate old contract (without contract type)
+    data = deepcopy(self.initial_data)
+    data['id'] = uuid4().hex
+    del data['contractType']
+    response = self.app.post_json('/contracts', {"data": data})
+    self.assertEqual(response.status, '201 Created')
+    self.assertEqual(response.content_type, 'application/json')
+    contract = response.json['data']
+    self.assertNotIn('contractType', contract)
+
+    # try to get old contract
     response = self.app.get('/contracts/{}'.format(contract['id']))
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.content_type, 'application/json')
@@ -649,6 +677,18 @@ def patch_tender_contract(self):
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['title'], "New Title")
 
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
+                                   {"data": {"contractType": "not common"}}, status=422)
+    self.assertEqual(response.status, '422 Unprocessable Entity')
+    self.assertEqual(response.json['errors'], [
+        {"location": "body", "name": "contractType", "description": ["Value must be one of ['common']."]}
+    ])
+
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
+                                   {"data": {"contractType": "common"}})
+    self.assertEqual(response.status, '200 OK')
+    self.assertEqual(response.body, 'null')
+
     # response = self.app.patch_json('/contracts/{}?acc_token={}'.format(contract['id'], token),
                                    # {"data": {"value": {"currency": "USD"}}})
     # response = self.app.patch_json('/contracts/{}?acc_token={}'.format(contract['id'], token),
@@ -706,6 +746,10 @@ def patch_tender_contract(self):
 
     response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
                                    {"data": {"title": "fff"}}, status=403)
+    self.assertEqual(response.status, '403 Forbidden')
+
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
+                                   {"data": {"contractType": "common"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
 
     response = self.app.patch_json('/contracts/some_id', {"data": {"status": "active"}}, status=404)
