@@ -8,12 +8,10 @@ from openprocurement.api.utils import (
 )
 from openprocurement.contracting.api.utils import (
     contractingresource,
-    contract_serialize,
     save_contract
 )
 from openprocurement.contracting.core.utils import (
     apply_patch,
-    set_ownership,
 )
 from openprocurement.contracting.core.validation import (
     validate_change_data,
@@ -51,7 +49,9 @@ class ContractsChangesResource(APIResource):
         return {'data': self.request.validated['change'].serialize("view")}
 
     @json_view(content_type="application/json", permission='edit_contract',
-               validators=(validate_change_data, validate_contract_change_add_not_in_allowed_contract_status, validate_create_contract_change))
+               validators=(validate_change_data,
+                           validate_contract_change_add_not_in_allowed_contract_status,
+                           validate_create_contract_change))
     def collection_post(self):
         """ Contract Change create """
         contract = self.request.validated['contract']
@@ -72,7 +72,10 @@ class ContractsChangesResource(APIResource):
             if last_date_signed:  # BBB very old contracts
                 if change['dateSigned'] < last_date_signed:
                     # Can't move validator because of code above
-                    raise_operation_error(self.request,  'Change dateSigned ({}) can\'t be earlier than {} dateSigned ({})'.format(change['dateSigned'].isoformat(), obj_str, last_date_signed.isoformat()))
+                    raise_operation_error(
+                        self.request,
+                        'Change dateSigned ({}) can\'t be earlier than {} dateSigned ({})'.format(
+                            change['dateSigned'].isoformat(), obj_str, last_date_signed.isoformat()))
 
         contract.changes.append(change)
 
@@ -112,9 +115,12 @@ class ContractsChangesResource(APIResource):
             if last_date_signed:  # BBB very old contracts
                 if change['dateSigned'] < last_date_signed:
                     # Can't move validator because of code above
-                    raise_operation_error(self.request,  'Change dateSigned ({}) can\'t be earlier than {} dateSigned ({})'.format(change['dateSigned'].isoformat(), obj_str, last_date_signed.isoformat()))
+                    raise_operation_error(
+                        self.request,
+                        'Change dateSigned ({}) can\'t be earlier than {} dateSigned ({})'.format(
+                            change['dateSigned'].isoformat(), obj_str, last_date_signed.isoformat()))
 
         if save_contract(self.request):
             self.LOGGER.info('Updated contract change {}'.format(change.id),
-                            extra=context_unpack(self.request, {'MESSAGE_ID': 'contract_change_patch'}))
+                             extra=context_unpack(self.request, {'MESSAGE_ID': 'contract_change_patch'}))
             return {'data': change.serialize('view')}

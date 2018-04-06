@@ -41,7 +41,8 @@ class ContractChangesResourceTest(BaseContractContentWebTest):
     test_change_date_signed = snitch(change_date_signed)
     test_date_signed_on_change_creation = snitch(date_signed_on_change_creation)
     test_change_date_signed_very_old_contracts_data = snitch(change_date_signed_very_old_contracts_data)
-    test_date_signed_on_change_creation_for_very_old_contracts_data  = snitch(date_signed_on_change_creation_for_very_old_contracts_data)
+    test_date_signed_on_change_creation_for_very_old_contracts_data = \
+        snitch(date_signed_on_change_creation_for_very_old_contracts_data)
 
 
 def suite():

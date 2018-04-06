@@ -36,6 +36,7 @@ class ContractDocumentWithDSResourceTest(ContractDocumentResourceTest):
     test_create_contract_documnet_json = snitch(create_contract_document_json)
     test_put_contract_document_json = snitch(put_contract_document_json)
 
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(ContractDocumentResourceTest))

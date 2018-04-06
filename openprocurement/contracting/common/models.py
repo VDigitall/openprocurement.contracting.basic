@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from zope.interface import implementer, Interface
 from schematics.types import StringType
-from schematics.transforms import whitelist, blacklist
+from schematics.transforms import whitelist
 from openprocurement.contracting.core.models import (
     contract_view_role,
     contract_create_role,
