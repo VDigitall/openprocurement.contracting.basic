@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from functools import partial
 from openprocurement.api.utils import (
     context_unpack,
     json_view,
@@ -7,7 +6,6 @@ from openprocurement.api.utils import (
 )
 from openprocurement.contracting.api.utils import (
     contractingresource,
-    contract_serialize,
     save_contract
 )
 from openprocurement.contracting.core.utils import (
@@ -44,7 +42,7 @@ class ContractResource(APIResource):
 
         if save_contract(self.request):
             self.LOGGER.info('Updated contract {}'.format(contract.id),
-                            extra=context_unpack(self.request, {'MESSAGE_ID': 'contract_patch'}))
+                             extra=context_unpack(self.request, {'MESSAGE_ID': 'contract_patch'}))
             return {'data': contract.serialize('view')}
 
 
@@ -64,7 +62,7 @@ class ContractCredentialsResource(APIResource):
         set_ownership(contract, self.request)
         if save_contract(self.request):
             self.LOGGER.info('Generate Contract credentials {}'.format(contract.id),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'contract_patch'}))
+                             extra=context_unpack(self.request, {'MESSAGE_ID': 'contract_patch'}))
             return {
                 'data': contract.serialize("view"),
                 'access': {

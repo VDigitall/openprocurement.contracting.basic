@@ -95,6 +95,7 @@ def empty_listing(self):
     self.assertNotIn('descending=1', response.json['prev_page']['uri'])
     self.assertIn('limit=10', response.json['prev_page']['uri'])
 
+
 def listing(self):
     response = self.app.get('/contracts')
     self.assertEqual(response.status, '200 OK')
@@ -295,6 +296,7 @@ def listing_changes(self):
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(len(response.json['data']), 4)
 
+
 def get_contract(self):
     response = self.app.get('/contracts')
     self.assertEqual(response.status, '200 OK')
@@ -319,6 +321,7 @@ def get_contract(self):
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.content_type, 'application/json')
     self.assertIn('{\n    "data": {\n        "', response.body)
+
 
 def not_found(self):
     response = self.app.get('/contracts')
@@ -382,6 +385,7 @@ def not_found(self):
         {u'description': u'Not Found', u'location': u'url', u'name': u'contract_id'}
     ])
 
+
 def create_contract_invalid(self):
     request_path = '/contracts'
     response = self.app.post(request_path, 'data', status=415)
@@ -389,8 +393,7 @@ def create_contract_invalid(self):
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['status'], 'error')
     self.assertEqual(response.json['errors'], [
-        {u'description':
-             u"Content-Type header should be one of ['application/json']", u'location': u'header',
+        {u'description': u"Content-Type header should be one of ['application/json']", u'location': u'header',
          u'name': u'Content-Type'}
     ])
 
@@ -452,6 +455,7 @@ def create_contract_invalid(self):
          u'data', u'name': u'contractType'}
     ])
 
+
 def create_contract_generated(self):
     data = self.initial_data.copy()
     data.update({'id': uuid4().hex, 'doc_id': uuid4().hex, 'contractID': uuid4().hex})
@@ -466,6 +470,7 @@ def create_contract_generated(self):
     self.assertEqual(data['id'], contract['id'])
     self.assertNotEqual(data['doc_id'], contract['id'])
     self.assertEqual(data['contractID'], contract['contractID'])
+
 
 def create_contract(self):
     response = self.app.get('/contracts')
@@ -565,10 +570,13 @@ def contract_status_change(self):
                                    {"data": {"status": "terminated"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
     self.assertEqual(response.json['errors'], [
-        {u'description': u"Can't terminate contract while 'amountPaid' is not set", u'location': u'body', u'name': u'data'}])
+        {u'description': u"Can't terminate contract while 'amountPaid' is not set",
+         u'location': u'body', u'name': u'data'}])
 
-    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
-                                   {"data": {"status": "terminated", "amountPaid": {"amount": 100, "valueAddedTaxIncluded": True, "currency": "UAH"}}})
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(
+        self.contract['id'], token), {"data": {
+            "status": "terminated",
+            "amountPaid": {"amount": 100, "valueAddedTaxIncluded": True, "currency": "UAH"}}})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['status'], 'terminated')
 
@@ -576,6 +584,7 @@ def contract_status_change(self):
     response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
                                    {"data": {"status": "active"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
+
 
 def contract_items_change(self):
     tender_token = self.initial_data['tender_token']
@@ -609,10 +618,10 @@ def contract_items_change(self):
         {"location": "body", "name": "items", "description": ["Item id should be uniq for all items"]}
     ])
 
-    #item['id'] = uuid4().hex
-    #response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
-                                   #{"data": {"items": [{}, item]}})
-    #self.assertEqual(len(response.json['data']['items']), 2)
+    # item['id'] = uuid4().hex
+    # response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
+    #                                {"data": {"items": [{}, item]}})
+    # self.assertEqual(len(response.json['data']['items']), 2)
 
     # try to change classification
     response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
@@ -635,10 +644,10 @@ def contract_items_change(self):
     startDate = get_now().isoformat()
     endDate = (get_now() + timedelta(days=90)).isoformat()
     response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
-                                   {"data": {"items": [{
-                                       'deliveryAddress': {u"postalCode": u"79011", u"streetAddress": u"вул. Літаючого Хом’яка",},
-                                       'deliveryDate': {u"startDate": startDate, u"endDate": endDate}
-                                   }]}})
+        {"data": {"items": [{
+            'deliveryAddress': {u"postalCode": u"79011", u"streetAddress": u"вул. Літаючого Хом’яка", },
+            'deliveryDate': {u"startDate": startDate, u"endDate": endDate}
+        }]}})
     self.assertEqual(response.json['data']['items'][0]['deliveryAddress']['postalCode'], u"79011")
     self.assertEqual(response.json['data']['items'][0]['deliveryAddress']['streetAddress'], u"вул. Літаючого Хом’яка")
     self.assertEqual(response.json['data']['items'][0]['deliveryAddress']['region'], u"м. Київ")
@@ -648,18 +657,20 @@ def contract_items_change(self):
     self.assertEqual(response.json['data']['items'][0]['deliveryDate']['endDate'], endDate)
 
     # remove first item
-    #response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
-                                   #{"data": {"items": [item_2]}})
-    #self.assertEqual(len(response.json['data']['items']), 1)
-    #self.assertEqual(response.json['data']['items'][0], item_2)
+    # response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
+    #                                {"data": {"items": [item_2]}})
+    # self.assertEqual(len(response.json['data']['items']), 1)
+    # self.assertEqual(response.json['data']['items'][0], item_2)
 
     # try to remove all items
     response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
                                    {"data": {"items": []}}, status=422)
     self.assertEqual(response.status, '422 Unprocessable Entity')
 
+
 def patch_tender_contract(self):
-    response = self.app.patch_json('/contracts/{}'.format(self.contract['id']), {"data": {"title": "New Title"}}, status=403)
+    response = self.app.patch_json('/contracts/{}'.format(
+        self.contract['id']), {"data": {"title": "New Title"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
 
     tender_token = self.initial_data['tender_token']
@@ -690,12 +701,13 @@ def patch_tender_contract(self):
     self.assertEqual(response.body, 'null')
 
     # response = self.app.patch_json('/contracts/{}?acc_token={}'.format(contract['id'], token),
-                                   # {"data": {"value": {"currency": "USD"}}})
+    #                                {"data": {"value": {"currency": "USD"}}})
     # response = self.app.patch_json('/contracts/{}?acc_token={}'.format(contract['id'], token),
-                                   # {"data": {"value": {"valueAddedTaxIncluded": False}}})
+    #                                {"data": {"value": {"valueAddedTaxIncluded": False}}})
 
-    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
-                                   {"data": {"amountPaid": {"amount": 900, "currency": "USD", "valueAddedTaxIncluded": False}}})
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(
+        self.contract['id'], token), {"data": {
+            "amountPaid": {"amount": 900, "currency": "USD", "valueAddedTaxIncluded": False}}})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['amountPaid']['amount'], 900)
     self.assertEqual(response.json['data']['amountPaid']['currency'], self.initial_data['value']['currency'])
@@ -794,10 +806,10 @@ def contract_administrator_change(self):
     self.assertEqual(response.json['data']["procuringEntity"]["contactPoint"]["telephone"], "102")
     self.assertEqual(response.json['data']["suppliers"][0]["contactPoint"]["email"], "fff@gmail.com")
     self.assertEqual(response.json['data']["suppliers"][0]["contactPoint"]["telephone"],
-                     self.initial_data["suppliers"][0]["contactPoint"]["telephone"]) # old field value left untouchable
+                     self.initial_data["suppliers"][0]["contactPoint"]["telephone"])  # old field value left untouchable
     self.assertEqual(response.json['data']["suppliers"][0]["address"]["postalCode"], "79014")
     self.assertEqual(response.json['data']["suppliers"][0]["address"]["countryName"],
-                     self.initial_data["suppliers"][0]["address"]["countryName"]) # old field value left untouchable
+                     self.initial_data["suppliers"][0]["address"]["countryName"])  # old field value left untouchable
     # administrator has permissions to update only: mode, procuringEntity, suppliers
     response = self.app.patch_json('/contracts/{}'.format(self.contract['id']), {'data': {
         'value': {'amount': 100500},
@@ -820,13 +832,15 @@ def contract_administrator_change(self):
 
 
 def get_credentials(self):
-    response = self.app.get('/contracts/{0}/credentials?acc_token={1}'.format(self.contract_id,
-                                                                              self.initial_data['tender_token']), status=405)
+    response = self.app.get('/contracts/{0}/credentials?acc_token={1}'.format(
+        self.contract_id, self.initial_data['tender_token']), status=405)
     self.assertEqual(response.status, '405 Method Not Allowed')
+
 
 def generate_credentials(self):
     tender_token = self.initial_data['tender_token']
-    response = self.app.patch_json('/contracts/{0}/credentials?acc_token={1}'.format(self.contract_id, tender_token), {'data': ''})
+    response = self.app.patch_json('/contracts/{0}/credentials?acc_token={1}'.format(
+        self.contract_id, tender_token), {'data': ''})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['id'], self.initial_data['id'])
     self.assertNotIn('tender_token', response.json['data'])
@@ -836,7 +850,8 @@ def generate_credentials(self):
     token1 = response.json['access']['token']
 
     # try second time generation
-    response = self.app.patch_json('/contracts/{0}/credentials?acc_token={1}'.format(self.contract_id, tender_token), {'data': ''})
+    response = self.app.patch_json('/contracts/{0}/credentials?acc_token={1}'.format(
+        self.contract_id, tender_token), {'data': ''})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['id'], self.initial_data['id'])
     self.assertEqual(len(response.json['access']['token']), 32)
@@ -857,7 +872,8 @@ def generate_credentials(self):
                                    {'data': ''}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
     self.assertEqual(response.json['errors'], [
-        {u'description': u"Can't generate credentials in current (terminated) contract status", u'location': u'body', u'name': u'data'}])
+        {u'description': u"Can't generate credentials in current (terminated) contract status",
+         u'location': u'body', u'name': u'data'}])
 
 # ContractWDocumentsWithDSResourceTest
 
@@ -896,28 +912,31 @@ def contract_wo_items_status_change(self):
     self.assertEqual(response.json['data']["status"], "active")
     self.assertNotIn('items', response.json['data'])
 
-    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], tender_token),
-                                    {"data": {"status": "active"}}, status=403)
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], tender_token), {"data": {
+        "status": "active"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
 
-    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(self.contract['id'], tender_token),
-                                    {'data': ''})
+    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(
+        self.contract['id'], tender_token), {'data': ''})
     self.assertEqual(response.status, '200 OK')
     token = response.json['access']['token']
 
     # active > terminated allowed
-    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
-                                    {"data": {"status": "terminated"}}, status=403)
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token), {"data": {
+        "status": "terminated"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
     self.assertEqual(response.json['errors'], [
-        {u'description': u"Can't terminate contract while 'amountPaid' is not set", u'location': u'body', u'name': u'data'}])
+        {u'description': u"Can't terminate contract while 'amountPaid' is not set",
+         u'location': u'body', u'name': u'data'}])
 
-    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
-                                    {"data": {"status": "terminated", "amountPaid": {"amount": 100, "valueAddedTaxIncluded": True, "currency": "UAH"}}})
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(
+        self.contract['id'], token), {"data": {
+            "status": "terminated",
+            "amountPaid": {"amount": 100, "valueAddedTaxIncluded": True, "currency": "UAH"}}})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['status'], 'terminated')
 
     # terminated > active not allowed
-    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
-                                    {"data": {"status": "active"}}, status=403)
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token), {"data": {
+        "status": "active"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
