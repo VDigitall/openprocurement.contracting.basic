@@ -11,6 +11,7 @@ from openprocurement.contracting.common.tests.document_blanks import (
     put_contract_document,
     patch_contract_document,
     contract_change_document,
+    contract_item_document,
     # ContractDocumentWithDSResourceTest
     create_contract_document_json_invalid,
     create_contract_document_json,
@@ -27,6 +28,7 @@ class ContractDocumentResourceTest(BaseContractContentWebTest):
     test_put_contract_document = snitch(put_contract_document)
     test_patch_contract_document = snitch(patch_contract_document)
     test_contract_change_document = snitch(contract_change_document)
+    test_contract_item_document = snitch(contract_item_document)
 
 
 class ContractDocumentWithDSResourceTest(ContractDocumentResourceTest):

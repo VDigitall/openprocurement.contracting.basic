@@ -440,6 +440,52 @@ def contract_change_document(self):
         {"location": "body", "name": "data", "description": "Can't add document to 'active' change"}])
 
 
+def contract_item_document(self):
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(
+        self.contract_id, self.contract_token), {"data": {"status": "active"}})
+    self.assertEqual(response.status, '200 OK')
+
+    response = self.app.post('/contracts/{}/documents?acc_token={}'.format(
+        self.contract_id, self.contract_token), upload_files=[('file', str(Header(u'укр.doc', 'utf-8')), 'content')])
+    self.assertEqual(response.status, '201 Created')
+    self.assertEqual(response.content_type, 'application/json')
+    doc_id = response.json["data"]['id']
+    self.assertIn(doc_id, response.headers['Location'])
+    self.assertEqual(u'укр.doc', response.json["data"]["title"])
+    self.assertEqual(response.json["data"]["documentOf"], "contract")
+    self.assertNotIn("documentType", response.json["data"])
+
+    response = self.app.patch_json('/contracts/{}/documents/{}?acc_token={}'.format(
+        self.contract_id, doc_id, self.contract_token), {"data": {"documentOf": "item"}}, status=422)
+    self.assertEqual(response.status, '422 Unprocessable Entity')
+    self.assertEqual(response.json['errors'], [
+        {"location": "body", "name": "relatedItem", "description": ["This field is required."]}])
+
+    response = self.app.patch_json('/contracts/{}/documents/{}?acc_token={}'.format(
+        self.contract_id, doc_id, self.contract_token), {"data": {
+            "documentOf": "item",
+            "relatedItem": '1234' * 8, }}, status=422)
+    self.assertEqual(response.status, '422 Unprocessable Entity')
+    self.assertEqual(response.json['errors'], [
+        {"location": "body", "name": "relatedItem", "description": ["relatedItem should be one of items"]}])
+
+    # get correct item id
+    response = self.app.get('/contracts/{}'.format(self.contract_id))
+    self.assertEqual(response.status, '200 OK')
+    self.assertEqual(response.content_type, 'application/json')
+    item = response.json['data']['items'][0]
+
+    response = self.app.patch_json('/contracts/{}/documents/{}?acc_token={}'.format(
+        self.contract_id, doc_id, self.contract_token), {"data": {
+            "documentOf": "item",
+            "relatedItem": item['id']}})
+    self.assertEqual(response.status, '200 OK')
+    self.assertEqual(response.content_type, 'application/json')
+    self.assertEqual(doc_id, response.json["data"]["id"])
+    self.assertEqual(response.json["data"]["documentOf"], 'item')
+    self.assertEqual(response.json["data"]["relatedItem"], item['id'])
+
+
 # ContractDocumentWithDSResourceTest
 
 

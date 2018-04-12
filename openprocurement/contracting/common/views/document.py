@@ -24,7 +24,7 @@ from openprocurement.contracting.core.validation import (
 
 
 @contractingresource(
-    name='Contract Documents',
+    name='common:Contract Documents',
     collection_path='/contracts/{contract_id}/documents',
     path='/contracts/{contract_id}/documents/{document_id}',
     contractType='common',
