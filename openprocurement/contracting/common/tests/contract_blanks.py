@@ -783,6 +783,40 @@ def patch_tender_contract(self):
     self.assertEqual(response.json['data']['amountPaid']['amount'], 100500)
     self.assertEqual(response.json['data']['terminationDetails'], 'sink')
 
+    # simulate old contract (without contract type)
+    data = deepcopy(self.initial_data)
+    data['id'] = uuid4().hex
+    del data['contractType']
+    auth = self.app.authorization
+    self.app.authorization = ('Basic', ('contracting', ''))
+
+    response = self.app.post_json('/contracts', {"data": data})
+    self.assertEqual(response.status, '201 Created')
+    self.assertEqual(response.content_type, 'application/json')
+    self.assertNotIn('contractType', response.json['data'])
+    contract = response.json['data']
+    token = response.json['access']['token']
+
+    # try to patch old contract
+    self.app.authorization = auth
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(contract['id'], token),
+                                   {"data": {"title": "New New Title"}})
+    self.assertEqual(response.status, '200 OK')
+    self.assertEqual(response.json['data']['title'], "New New Title")
+    # no contractType after patch
+    self.assertNotIn('contractType', response.json['data'])
+
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(contract['id'], token),
+                                   {"data": {"contractType": "common"}})
+    self.assertEqual(response.status, '200 OK')
+    self.assertEqual(response.body, 'null')
+
+    # try to get old contract
+    response = self.app.get('/contracts/{}'.format(contract['id']))
+    self.assertEqual(response.status, '200 OK')
+    self.assertEqual(response.content_type, 'application/json')
+    self.assertNotIn('contractType', contract)
+
 
 # ContractResource4AdministratorTest
 
