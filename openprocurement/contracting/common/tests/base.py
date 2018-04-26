@@ -4,12 +4,14 @@ import json
 from copy import deepcopy
 from webtest import TestApp
 
-from openprocurement.contracting.api.tests.base import (
+from openprocurement.contracting.core.tests.base import (
     BaseWebTest as BaseBaseWebTest
 )
 from openprocurement.contracting.core.tests.base import (
-    test_contract_data,
     test_contract_data_wo_items
+)
+from openprocurement.contracting.core.tests.fixtures.contract_fixtures import (
+    test_contract_data
 )
 
 

@@ -4,7 +4,7 @@ from openprocurement.api.utils import (
     json_view,
     APIResource,
 )
-from openprocurement.contracting.api.utils import (
+from openprocurement.contracting.core.utils import (
     contractingresource,
     save_contract
 )

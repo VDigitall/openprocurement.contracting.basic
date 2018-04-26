@@ -12,7 +12,7 @@ from openprocurement.api.validation import (
     validate_file_upload,
     validate_patch_document_data,
 )
-from openprocurement.contracting.api.utils import (
+from openprocurement.contracting.core.utils import (
     contractingresource,
     save_contract
 )
