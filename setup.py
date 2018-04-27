@@ -24,7 +24,7 @@ api_requires = requires + [
 
 entry_points = {
     'openprocurement.contracting.core.plugins': [
-        'contract.common = openprocurement.contracting.common.includeme:includeme'
+        'contracting.common = openprocurement.contracting.common.includeme:includeme'
     ]
 }
 

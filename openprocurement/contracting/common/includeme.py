@@ -13,7 +13,7 @@ PKG = get_distribution(__package__)
 LOGGER = getLogger(PKG.project_name)
 
 
-def includeme(config):
+def includeme(config, plugin_config=None):
     LOGGER.info('Init contracting.common plugin.')
     config.add_contract_contractType(Contract)
     config.scan("openprocurement.contracting.common.views")

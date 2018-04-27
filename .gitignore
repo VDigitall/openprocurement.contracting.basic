@@ -62,3 +62,6 @@ src/
 
 cover/
 output.html
+
+# Dumps
+erl_crash.dump

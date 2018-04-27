@@ -4,8 +4,8 @@ from copy import deepcopy
 
 from openprocurement.api.tests.base import snitch
 
-from openprocurement.contracting.core.tests.base import (
-    documents
+from openprocurement.contracting.core.tests.fixtures import (
+    document_fixtures
 )
 
 from openprocurement.contracting.common.tests.base import (
@@ -65,7 +65,7 @@ class ContractResourceTest(BaseWebTest):
 class ContractWDocumentsWithDSResourceTest(BaseWebTest):
     docservice = True
     initial_data = deepcopy(test_common_contract_data)
-    documents = deepcopy(documents)
+    documents = deepcopy(document_fixtures.documents)
     initial_data['documents'] = documents
 
     test_create_contract_w_documents = snitch(create_contract_w_documents)

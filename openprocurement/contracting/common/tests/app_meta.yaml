@@ -1,0 +1,20 @@
+---
+plugins:
+  api:
+    plugins:
+      contracting.core:
+        aliases: []
+        migration: false
+        plugins:
+          contracting.common:
+            aliases: []
+            migration: false
+
+config:
+  auth:
+    type: file
+    src: auth.ini
+  database:
+    couchdb.db_name: contracting_common_tests
+    couchdb.url: http://op:op@localhost:5984/
+...
