@@ -4,7 +4,8 @@ from openprocurement.api.utils import (
     json_view,
     APIResource,
     get_now,
-    raise_operation_error
+    raise_operation_error,
+    error_handler,
 )
 from openprocurement.contracting.core.utils import (
     contractingresource,
@@ -117,6 +118,7 @@ class ContractsChangesResource(APIResource):
                     # Can't move validator because of code above
                     raise_operation_error(
                         self.request,
+                        error_handler,
                         'Change dateSigned ({}) can\'t be earlier than {} dateSigned ({})'.format(
                             change['dateSigned'].isoformat(), obj_str, last_date_signed.isoformat()))
 

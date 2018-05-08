@@ -14,7 +14,7 @@ from openprocurement.auctions.core.utils import opresource
     description="Open Contracting compatible data exchange format. ' \
     'See http://ocds.open-contracting.org/standard/r/master/#tender for more info"
 )
-class TenderResource(APIResource):
+class AuctionResource(APIResource):
 
     @json_view(permission='extract_credentials')
     def get(self):

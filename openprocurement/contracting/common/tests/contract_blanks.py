@@ -469,7 +469,7 @@ def create_contract_generated(self):
     self.assertEqual(set(contract), set([
         u'id', u'dateModified', u'contractID', u'status', u'suppliers',
         u'contractNumber', u'period', u'dateSigned', u'value', u'awardID',
-        u'items', u'owner', u'tender_id', u'procuringEntity', u'contractType']))
+        u'items', u'owner', u'auction_id', u'procuringEntity', u'contractType']))
     self.assertEqual(data['id'], contract['id'])
     self.assertNotEqual(data['doc_id'], contract['id'])
     self.assertEqual(data['contractID'], contract['contractID'])
