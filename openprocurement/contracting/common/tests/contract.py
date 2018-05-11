@@ -31,7 +31,7 @@ from openprocurement.contracting.common.tests.contract_blanks import (
     # ContractResource4BrokersTest
     contract_status_change,
     contract_items_change,
-    patch_tender_contract,
+    patch_auction_contract,
     # ContractResource4AdministratorTest
     contract_administrator_change,
     # ContractCredentialsTest
@@ -77,7 +77,7 @@ class ContractResource4BrokersTest(BaseContractWebTest):
 
     test_contract_status_change = snitch(contract_status_change)
     test_contract_items_change = snitch(contract_items_change)
-    test_patch_tender_contract = snitch(patch_tender_contract)
+    test_patch_auction_contract = snitch(patch_auction_contract)
 
 
 class ContractResource4AdministratorTest(BaseContractWebTest):

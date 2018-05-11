@@ -75,6 +75,7 @@ class ContractsChangesResource(APIResource):
                     # Can't move validator because of code above
                     raise_operation_error(
                         self.request,
+                        error_handler,
                         'Change dateSigned ({}) can\'t be earlier than {} dateSigned ({})'.format(
                             change['dateSigned'].isoformat(), obj_str, last_date_signed.isoformat()))
 

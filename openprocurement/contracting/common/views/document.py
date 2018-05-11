@@ -7,7 +7,7 @@ from openprocurement.api.utils import (
     APIResource,
     json_view
 )
-from openprocurement.api.validation import (
+from openprocurement.auctions.core.validation import (
     validate_file_update,
     validate_file_upload,
     validate_patch_document_data,

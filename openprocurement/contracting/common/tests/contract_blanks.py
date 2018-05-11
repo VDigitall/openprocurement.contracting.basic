@@ -343,29 +343,29 @@ def not_found(self):
             break
     self.assertEqual(len(response.json['data']), 1)
 
-    tender_id = self.initial_data['tender_id']
-    response = self.app.get('/contracts/{}'.format(tender_id), status=404)
+    auction_id = self.initial_data['auction_id']
+    response = self.app.get('/contracts/{}'.format(auction_id), status=404)
     self.assertEqual(response.status, '404 Not Found')
 
-    from openprocurement.tender.belowthreshold.tests.base import test_tender_data
+    from openprocurement.contracting.common.tests.fixtures.auction_fixtures import test_auction_data
     orig_auth = self.app.authorization
     self.app.authorization = ('Basic', ('broker1', ''))
-    response = self.app.post_json('/tenders', {"data": test_tender_data})
+    response = self.app.post_json('/auctions', {"data": test_auction_data})
     self.assertEqual(response.status, '201 Created')
-    tender = response.json['data']
+    auction = response.json['data']
     self.app.authorization = orig_auth
 
-    response = self.app.get('/contracts/{}'.format(tender['id']), status=404)
+    response = self.app.get('/contracts/{}'.format(auction['id']), status=404)
     self.assertEqual(response.status, '404 Not Found')
 
     data = deepcopy(self.initial_data)
     data['id'] = uuid4().hex
-    data['tender_id'] = tender['id']
+    data['auction_id'] = auction['id']
     response = self.app.post_json('/contracts', {'data': data})
     self.assertEqual(response.status, '201 Created')
     contract = response.json['data']
 
-    response = self.app.get('/contracts/{}'.format(tender['id']), status=404)
+    response = self.app.get('/contracts/{}'.format(auction['id']), status=404)
     self.assertEqual(response.status, '404 Not Found')
 
     response = self.app.get('/contracts/{}'.format(data['id']))
@@ -406,7 +406,7 @@ def create_contract_invalid(self):
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['status'], 'error')
     self.assertEqual(response.json['errors'], [
-        {u'description': u'No JSON object could be decoded',
+        {u'description': u'Expecting value: line 1 column 1 (char 0)',
          u'location': u'body', u'name': u'data'}
     ])
 
@@ -454,8 +454,8 @@ def create_contract_invalid(self):
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['status'], 'error')
     self.assertEqual(response.json['errors'], [
-        {u'description': u'Not implemented', u'location':
-         u'data', u'name': u'contractType'}
+        {u'description': u'contractType Not implemented', u'location':
+         u'body', u'name': u'data'}
     ])
 
 
@@ -552,18 +552,18 @@ def create_contract(self):
 
 
 def contract_status_change(self):
-    tender_token = self.initial_data['tender_token']
+    auction_token = self.initial_data['auction_token']
 
     response = self.app.get('/contracts/{}'.format(self.contract['id']))
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['data']["status"], "active")
 
-    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], tender_token),
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], auction_token),
                                    {"data": {"status": "active"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
 
-    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(self.contract['id'], tender_token),
+    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(self.contract['id'], auction_token),
                                    {'data': ''})
     self.assertEqual(response.status, '200 OK')
     token = response.json['access']['token']
@@ -590,9 +590,9 @@ def contract_status_change(self):
 
 
 def contract_items_change(self):
-    tender_token = self.initial_data['tender_token']
+    auction_token = self.initial_data['auction_token']
 
-    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(self.contract['id'], tender_token),
+    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(self.contract['id'], auction_token),
                                    {'data': ''})
     self.assertEqual(response.status, '200 OK')
     token = response.json['access']['token']
@@ -629,10 +629,9 @@ def contract_items_change(self):
     # try to change classification
     response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], token),
                                    {"data": {"items": [{
-                                       'classification': {'id': '19433000-0'},
+                                       'classification': {'id': '39100000-3'},
                                    }]}})
     self.assertEqual(response.status, '200 OK')
-    self.assertEqual(response.json, None)
 
     # add additional classification
     item_classific = deepcopy(self.initial_data['items'][0]['classification'])
@@ -641,7 +640,6 @@ def contract_items_change(self):
                                        'additionalClassifications': [{}, item_classific],
                                    }]}})
     self.assertEqual(response.status, '200 OK')
-    self.assertEqual(response.json, None)
 
     # update item fields
     startDate = get_now().isoformat()
@@ -671,17 +669,17 @@ def contract_items_change(self):
     self.assertEqual(response.status, '422 Unprocessable Entity')
 
 
-def patch_tender_contract(self):
+def patch_auction_contract(self):
     response = self.app.patch_json('/contracts/{}'.format(
         self.contract['id']), {"data": {"title": "New Title"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
 
-    tender_token = self.initial_data['tender_token']
-    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], tender_token),
+    auction_token = self.initial_data['auction_token']
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], auction_token),
                                    {"data": {"title": "New Title"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
 
-    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(self.contract['id'], tender_token),
+    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(self.contract['id'], auction_token),
                                    {'data': ''})
     self.assertEqual(response.status, '200 OK')
     token = response.json['access']['token']
@@ -825,17 +823,21 @@ def patch_tender_contract(self):
 
 
 def contract_administrator_change(self):
-    response = self.app.patch_json('/contracts/{}'.format(self.contract['id']),
-                                   {'data': {'mode': u'test',
-                                             "suppliers": [{
-                                                "contactPoint": {
-                                                    "email": "fff@gmail.com",
-                                                },
-                                                "address": {"postalCode": "79014"}
-                                             }],
-                                             'procuringEntity': {"identifier": {"id": "11111111"},
-                                                                 "contactPoint": {"telephone": "102"}}
-                                             }})
+    self.app.authorization = ('Basic', ('administrator', ''))
+    response = self.app.patch_json(
+        '/contracts/{}'.format(self.contract['id']),
+        {'data': 
+            {
+                'mode': u'test',
+                "suppliers": [{
+                        "contactPoint": {
+                            "email": "fff@gmail.com",
+                        },
+                        "address": {"postalCode": "79014"}}],
+                'procuringEntity': {
+                    "identifier": {"id": "11111111"},
+                    "contactPoint": {"telephone": "102"}}}})
+
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json['data']['mode'], u'test')
@@ -870,17 +872,17 @@ def contract_administrator_change(self):
 
 def get_credentials(self):
     response = self.app.get('/contracts/{0}/credentials?acc_token={1}'.format(
-        self.contract_id, self.initial_data['tender_token']), status=405)
+        self.contract_id, self.initial_data['auction_token']), status=405)
     self.assertEqual(response.status, '405 Method Not Allowed')
 
 
 def generate_credentials(self):
-    tender_token = self.initial_data['tender_token']
+    auction_token = self.initial_data['auction_token']
     response = self.app.patch_json('/contracts/{0}/credentials?acc_token={1}'.format(
-        self.contract_id, tender_token), {'data': ''})
+        self.contract_id, auction_token), {'data': ''})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['id'], self.initial_data['id'])
-    self.assertNotIn('tender_token', response.json['data'])
+    self.assertNotIn('auction_token', response.json['data'])
     self.assertNotIn('owner_token', response.json['data'])
     self.assertEqual(response.json['data']['owner'], 'broker')
     self.assertEqual(len(response.json['access']['token']), 32)
@@ -888,7 +890,7 @@ def generate_credentials(self):
 
     # try second time generation
     response = self.app.patch_json('/contracts/{0}/credentials?acc_token={1}'.format(
-        self.contract_id, tender_token), {'data': ''})
+        self.contract_id, auction_token), {'data': ''})
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.json['data']['id'], self.initial_data['id'])
     self.assertEqual(len(response.json['access']['token']), 32)
@@ -905,7 +907,7 @@ def generate_credentials(self):
                                    {"data": {"status": "terminated", "amountPaid": {"amount": 777}}})
     self.assertEqual(response.status, '200 OK')
 
-    response = self.app.patch_json('/contracts/{0}/credentials?acc_token={1}'.format(self.contract_id, tender_token),
+    response = self.app.patch_json('/contracts/{0}/credentials?acc_token={1}'.format(self.contract_id, auction_token),
                                    {'data': ''}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
     self.assertEqual(response.json['errors'], [
@@ -941,7 +943,7 @@ def create_contract_w_documents(self):
 
 
 def contract_wo_items_status_change(self):
-    tender_token = self.initial_data['tender_token']
+    auction_token = self.initial_data['auction_token']
 
     response = self.app.get('/contracts/{}'.format(self.contract['id']))
     self.assertEqual(response.status, '200 OK')
@@ -949,12 +951,12 @@ def contract_wo_items_status_change(self):
     self.assertEqual(response.json['data']["status"], "active")
     self.assertNotIn('items', response.json['data'])
 
-    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], tender_token), {"data": {
+    response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract['id'], auction_token), {"data": {
         "status": "active"}}, status=403)
     self.assertEqual(response.status, '403 Forbidden')
 
     response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(
-        self.contract['id'], tender_token), {'data': ''})
+        self.contract['id'], auction_token), {'data': ''})
     self.assertEqual(response.status, '200 OK')
     token = response.json['access']['token']
 

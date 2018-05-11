@@ -71,6 +71,7 @@ class BaseContractWebTest(BaseWebTest):
 
     def setUp(self):
         super(BaseContractWebTest, self).setUp()
+        self.app.authorization = ('Basic', ('broker', ''))
         self.create_contract()
 
     def create_contract(self):

@@ -2,6 +2,14 @@
 plugins:
   api:
     plugins:
+      auctions.core:
+        plugins:
+          auctions.flash:
+            plugins:
+              flash.migration:
+            aliases: [belowThreshold]
+            use_default: true
+            migration: false
       contracting.core:
         aliases: []
         migration: false
@@ -17,4 +25,6 @@ config:
   database:
     couchdb.db_name: contracting_common_tests
     couchdb.url: http://op:op@localhost:5984/
+  docservice:
+    docservice_url: http://localhost
 ...

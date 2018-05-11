@@ -16,9 +16,9 @@ def no_items_contract_change(self):
     contract = response.json['data']
     self.assertEqual(contract['status'], 'active')
     self.assertNotIn('items', contract)
-    tender_token = data['tender_token']
+    auction_token = data['auction_token']
 
-    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(contract['id'], tender_token),
+    response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(contract['id'], auction_token),
                                    {'data': ''})
     self.assertEqual(response.status, '200 OK')
     token = response.json['access']['token']

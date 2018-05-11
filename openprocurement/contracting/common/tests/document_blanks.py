@@ -80,8 +80,20 @@ def create_contract_document(self):
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(response.json, {"data": []})
 
-    response = self.app.post('/contracts/{}/documents?acc_token={}'.format(
-        self.contract_id, self.contract_token), upload_files=[('file', u'укр.doc', 'content')])
+    response = self.app.post_json(
+        '/contracts/{}/documents?acc_token={}'.format(
+            self.contract_id, self.contract_token
+        ),
+        {
+            'data':
+            {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '201 Created')
     self.assertEqual(response.content_type, 'application/json')
     doc_id = response.json["data"]['id']
@@ -139,9 +151,19 @@ def create_contract_document(self):
     self.assertEqual(doc_id, response.json["data"]["id"])
     self.assertEqual(u'укр.doc', response.json["data"]["title"])
 
-    response = self.app.post('/contracts/{}/documents?acc_token={}'.format(
-        self.contract_id, self.contract_token), upload_files=[
-            ('file', u'укр.doc'.encode("ascii", "xmlcharrefreplace"), 'content')])
+    response = self.app.post_json(
+        '/contracts/{}/documents?acc_token={}'.format(
+            self.contract_id, self.contract_token),
+        {
+            'data':
+            {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '201 Created')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(u'укр.doc', response.json["data"]["title"])
@@ -164,34 +186,45 @@ def create_contract_document(self):
 
 
 def put_contract_document(self):
-    from six import BytesIO
-    from urllib import quote
     response = self.app.patch_json('/contracts/{}?acc_token={}'.format(self.contract_id, self.contract_token),
                                    {"data": {"status": "active"}})
     self.assertEqual(response.status, '200 OK')
 
-    body = u'''--BOUNDARY\nContent-Disposition: form-data; name="file"; filename={}\nContent-Type: application/msword\n\ncontent\n'''.format(u'\uff07')
-    environ = self.app._make_environ()
-    environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=BOUNDARY'
-    environ['REQUEST_METHOD'] = 'POST'
-    req = self.app.RequestClass.blank(self.app._remove_fragment('/contracts/{}/documents'.format(
-        self.contract_id)), environ)
-    req.environ['wsgi.input'] = BytesIO(body.encode('utf8'))
-    req.content_length = len(body)
-    response = self.app.do_request(req, status=422)
-    self.assertEqual(response.status, '422 Unprocessable Entity')
-    self.assertEqual(response.content_type, 'application/json')
-    self.assertEqual(response.json['errors'][0]["description"], "could not decode params")
-
-    body = u'''--BOUNDARY\nContent-Disposition: form-data; name="file"; filename*=utf-8''{}\nContent-Type: application/msword\n\ncontent\n'''.format(quote('укр.doc'))
-    environ = self.app._make_environ()
-    environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=BOUNDARY'
-    environ['REQUEST_METHOD'] = 'POST'
-    req = self.app.RequestClass.blank(self.app._remove_fragment('/contracts/{}/documents?acc_token={}'.format(
-        self.contract_id, self.contract_token)), environ)
-    req.environ['wsgi.input'] = BytesIO(body.encode(req.charset or 'utf8'))
-    req.content_length = len(body)
-    response = self.app.do_request(req)
+#    from six import BytesIO
+#    from urllib import quote
+#    body = u'''--BOUNDARY\nContent-Disposition: form-data; name="file"; filename={}\nContent-Type: application/msword\n\ncontent\n'''.format(u'\uff07')
+#    environ = self.app._make_environ()
+#    environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=BOUNDARY'
+#    environ['REQUEST_METHOD'] = 'POST'
+#    req = self.app.RequestClass.blank(self.app._remove_fragment('/contracts/{}/documents'.format(
+#        self.contract_id)), environ)
+#    req.environ['wsgi.input'] = BytesIO(body.encode('utf8'))
+#    req.content_length = len(body)
+#    response = self.app.do_request(req, status=422)
+#    self.assertEqual(response.status, '422 Unprocessable Entity')
+#    self.assertEqual(response.content_type, 'application/json')
+#    self.assertEqual(response.json['errors'][0]["description"], "could not decode params")
+#
+#    body = u'''--BOUNDARY\nContent-Disposition: form-data; name="file"; filename*=utf-8''{}\nContent-Type: application/msword\n\ncontent\n'''.format(quote('укр.doc'))
+#    environ = self.app._make_environ()
+#    environ['CONTENT_TYPE'] = 'multipart/form-data; boundary=BOUNDARY'
+#    environ['REQUEST_METHOD'] = 'POST'
+#    req = self.app.RequestClass.blank(self.app._remove_fragment('/contracts/{}/documents?acc_token={}'.format(
+#        self.contract_id, self.contract_token)), environ)
+#    req.environ['wsgi.input'] = BytesIO(body.encode(req.charset or 'utf8'))
+#    req.content_length = len(body)
+    response = self.app.post_json('/contracts/{}/documents?acc_token={}'.format(
+        self.contract_id, self.contract_token),
+        {
+            'data':
+            {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '201 Created')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(u'укр.doc', response.json["data"]["title"])
@@ -199,8 +232,20 @@ def put_contract_document(self):
     dateModified = response.json["data"]['dateModified']
     self.assertIn(doc_id, response.headers['Location'])
 
-    response = self.app.put('/contracts/{}/documents/{}?acc_token={}'.format(
-        self.contract_id, doc_id, self.contract_token), upload_files=[('file', 'name  name.doc', 'content2')])
+    response = self.app.put_json(
+        '/contracts/{}/documents/{}?acc_token={}'.format(
+            self.contract_id, doc_id, self.contract_token
+        ),
+        {
+            'data':
+            {
+                'title': u'name name.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(doc_id, response.json["data"]["id"])
@@ -249,8 +294,20 @@ def put_contract_document(self):
     self.assertEqual(dateModified, response.json["data"][0]['dateModified'])
     self.assertEqual(dateModified2, response.json["data"][1]['dateModified'])
 
-    response = self.app.post('/contracts/{}/documents?acc_token={}'.format(
-        self.contract_id, self.contract_token), upload_files=[('file', 'name.doc', 'content')])
+    response = self.app.post_json(
+        '/contracts/{}/documents?acc_token={}'.format(
+            self.contract_id, self.contract_token
+        ),
+        {
+            'data':
+            {
+                'title': u'name.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '201 Created')
     self.assertEqual(response.content_type, 'application/json')
     doc_id = response.json["data"]['id']
@@ -274,8 +331,20 @@ def put_contract_document(self):
             u'body', u'name': u'file'}
     ])
 
-    response = self.app.put('/contracts/{}/documents/{}?acc_token={}'.format(
-        self.contract_id, doc_id, self.contract_token), 'content3', content_type='application/msword')
+    response = self.app.put_json(
+        '/contracts/{}/documents/{}?acc_token={}'.format(
+            self.contract_id, doc_id, self.contract_token
+        ),
+        {
+            'data':
+            {
+                'title': u'name.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(doc_id, response.json["data"]["id"])
@@ -326,8 +395,20 @@ def patch_contract_document(self):
                                    {"data": {"status": "active"}})
     self.assertEqual(response.status, '200 OK')
 
-    response = self.app.post('/contracts/{}/documents?acc_token={}'.format(
-        self.contract_id, self.contract_token), upload_files=[('file', str(Header(u'укр.doc', 'utf-8')), 'content')])
+    response = self.app.post_json(
+        '/contracts/{}/documents?acc_token={}'.format(
+            self.contract_id, self.contract_token
+        ),
+        {
+            'data':
+            {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '201 Created')
     self.assertEqual(response.content_type, 'application/json')
     doc_id = response.json["data"]['id']
@@ -378,8 +459,19 @@ def contract_change_document(self):
                                    {"data": {"status": "active"}})
     self.assertEqual(response.status, '200 OK')
 
-    response = self.app.post('/contracts/{}/documents?acc_token={}'.format(
-        self.contract_id, self.contract_token), upload_files=[('file', str(Header(u'укр.doc', 'utf-8')), 'content')])
+    response = self.app.post_json(
+        '/contracts/{}/documents?acc_token={}'.format(
+            self.contract_id, self.contract_token
+        ),
+        { 'data':
+            {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '201 Created')
     self.assertEqual(response.content_type, 'application/json')
     doc_id = response.json["data"]['id']
@@ -414,9 +506,19 @@ def contract_change_document(self):
     self.assertEqual(response.json["data"]["documentOf"], 'change')
     self.assertEqual(response.json["data"]["relatedItem"], change['id'])
 
-    response = self.app.put('/contracts/{}/documents/{}?acc_token={}'.format(
-        self.contract_id, doc_id, self.contract_token), upload_files=[
-            ('file', str(Header(u'укр2.doc', 'utf-8')), 'content2')])
+    response = self.app.put_json(
+        '/contracts/{}/documents/{}?acc_token={}'.format(
+            self.contract_id, doc_id, self.contract_token
+        ),
+        { 'data':
+            {
+                'title': u'укр2.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.content_type, 'application/json')
     self.assertEqual(doc_id, response.json["data"]["id"])
@@ -426,8 +528,19 @@ def contract_change_document(self):
             'status': 'active', 'dateSigned': get_now().isoformat()}})
     self.assertEqual(response.status, '200 OK')
 
-    response = self.app.post('/contracts/{}/documents?acc_token={}'.format(
-        self.contract_id, self.contract_token), upload_files=[('file', str(Header(u'укр2.doc', 'utf-8')), 'content2')])
+    response = self.app.post_json(
+        '/contracts/{}/documents?acc_token={}'.format(
+            self.contract_id, self.contract_token
+        ),
+        { 'data':
+            {
+                'title': u'укр2.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '201 Created')
     doc_id = response.json["data"]['id']
 
@@ -445,8 +558,20 @@ def contract_item_document(self):
         self.contract_id, self.contract_token), {"data": {"status": "active"}})
     self.assertEqual(response.status, '200 OK')
 
-    response = self.app.post('/contracts/{}/documents?acc_token={}'.format(
-        self.contract_id, self.contract_token), upload_files=[('file', str(Header(u'укр.doc', 'utf-8')), 'content')])
+    response = self.app.post_json(
+        '/contracts/{}/documents?acc_token={}'.format(
+            self.contract_id, self.contract_token
+        ),
+        {
+            'data':
+            {
+                'title': u'укр.doc',
+                'url': self.generate_docservice_url(),
+                'format': 'application/msword',
+                'hash': 'md5:' + '0' * 32,
+            }
+        }
+    )
     self.assertEqual(response.status, '201 Created')
     self.assertEqual(response.content_type, 'application/json')
     doc_id = response.json["data"]['id']
