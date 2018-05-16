@@ -4,8 +4,8 @@ from copy import deepcopy
 
 from openprocurement.api.tests.base import snitch
 
-from openprocurement.contracting.core.tests.base import (
-    documents
+from openprocurement.contracting.core.tests.fixtures import (
+    document_fixtures
 )
 
 from openprocurement.contracting.common.tests.base import (
@@ -31,7 +31,7 @@ from openprocurement.contracting.common.tests.contract_blanks import (
     # ContractResource4BrokersTest
     contract_status_change,
     contract_items_change,
-    patch_tender_contract,
+    patch_auction_contract,
     # ContractResource4AdministratorTest
     contract_administrator_change,
     # ContractCredentialsTest
@@ -65,7 +65,7 @@ class ContractResourceTest(BaseWebTest):
 class ContractWDocumentsWithDSResourceTest(BaseWebTest):
     docservice = True
     initial_data = deepcopy(test_common_contract_data)
-    documents = deepcopy(documents)
+    documents = deepcopy(document_fixtures.documents)
     initial_data['documents'] = documents
 
     test_create_contract_w_documents = snitch(create_contract_w_documents)
@@ -77,7 +77,7 @@ class ContractResource4BrokersTest(BaseContractWebTest):
 
     test_contract_status_change = snitch(contract_status_change)
     test_contract_items_change = snitch(contract_items_change)
-    test_patch_tender_contract = snitch(patch_tender_contract)
+    test_patch_auction_contract = snitch(patch_auction_contract)
 
 
 class ContractResource4AdministratorTest(BaseContractWebTest):

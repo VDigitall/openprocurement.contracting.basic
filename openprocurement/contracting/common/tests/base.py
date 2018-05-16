@@ -4,12 +4,14 @@ import json
 from copy import deepcopy
 from webtest import TestApp
 
-from openprocurement.contracting.api.tests.base import (
+from openprocurement.contracting.core.tests.base import (
     BaseWebTest as BaseBaseWebTest
 )
 from openprocurement.contracting.core.tests.base import (
-    test_contract_data,
     test_contract_data_wo_items
+)
+from openprocurement.contracting.core.tests.fixtures.contract_fixtures import (
+    test_contract_data
 )
 
 
@@ -69,6 +71,7 @@ class BaseContractWebTest(BaseWebTest):
 
     def setUp(self):
         super(BaseContractWebTest, self).setUp()
+        self.app.authorization = ('Basic', ('broker', ''))
         self.create_contract()
 
     def create_contract(self):
@@ -91,6 +94,11 @@ class BaseContractContentWebTest(BaseContractWebTest):
 
     def setUp(self):
         super(BaseContractContentWebTest, self).setUp()
-        response = self.app.patch_json('/contracts/{}/credentials?acc_token={}'.format(
-            self.contract_id, self.initial_data['tender_token']), {'data': {}})
+        response = self.app.patch_json(
+            '/contracts/{}/credentials?acc_token={}'.format(
+                self.contract_id,
+                self.initial_data['auction_token']
+            ),
+            {'data': {}}
+        )
         self.contract_token = response.json['access']['token']
