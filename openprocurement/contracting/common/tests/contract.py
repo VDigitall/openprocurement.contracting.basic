@@ -64,6 +64,11 @@ class ContractResourceTest(BaseWebTest):
 
 class ContractWDocumentsWithDSResourceTest(BaseWebTest):
     docservice = True
+
+    def setUp(self):
+        super( ContractWDocumentsWithDSResourceTest, self).setUp()
+        self.setUpDS()
+
     initial_data = deepcopy(test_common_contract_data)
     documents = deepcopy(document_fixtures.documents)
     initial_data['documents'] = documents

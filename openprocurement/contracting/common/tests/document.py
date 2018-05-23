@@ -20,8 +20,12 @@ from openprocurement.contracting.common.tests.document_blanks import (
 
 
 class ContractDocumentResourceTest(BaseContractContentWebTest):
-    docservice = True
     initial_auth = ('Basic', ('broker', ''))
+    docservice = True
+
+    def setUp(self):
+        super(ContractDocumentResourceTest, self).setUp()
+        self.setUpDS()
 
     test_not_found = snitch(not_found)
     test_create_contract_document = snitch(create_contract_document)
