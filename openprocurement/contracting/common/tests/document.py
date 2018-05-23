@@ -21,6 +21,7 @@ from openprocurement.contracting.common.tests.document_blanks import (
 
 class ContractDocumentResourceTest(BaseContractContentWebTest):
     initial_auth = ('Basic', ('broker', ''))
+    docservice = True
 
     def setUp(self):
         super(ContractDocumentResourceTest, self).setUp()
